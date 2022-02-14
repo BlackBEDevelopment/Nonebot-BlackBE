@@ -1,10 +1,10 @@
-from nonebot import get_driver, require, on_startswith, on_message
-from nonebot.adapters.cqhttp import Event, Bot, MessageSegment
+from nonebot import get_driver, on_message, on_startswith, require
+from nonebot.adapters.cqhttp import Bot, Event, MessageSegment
 
 from .config import Config
 from .datatypes import BlackBEReturn
 from .get_data import get_simple_info
-from .get_msg import get_info_msg, get_full_info_msg
+from .get_msg import get_full_info_msg, get_info_msg
 
 global_config = get_driver().config
 config = Config(**global_config.dict())
@@ -64,13 +64,13 @@ async def handler_detect(bot: Bot, event: Event):
     if not noticed:
         if temp['black'].get(event.user_id) is None:
             temp['black'][event.user_id] = BlackBEReturn(**{
-                "success": True,
-                "status": 2001,
-                "message": "用户不存在于黑名单中哦",
-                "version": "v3",
+                "success" : True,
+                "status"  : 2001,
+                "message" : "用户不存在于黑名单中哦",
+                "version" : "v3",
                 "codename": "Moriya Suwako",
-                "time": 0,
-                "data": {"exist": False, "info": []}
+                "time"    : 0,
+                "data"    : {"exist": False, "info": []}
             })
             ret = await get_simple_info(qq=event.user_id)
             temp['black'][event.user_id] = ret if isinstance(ret, BlackBEReturn) else None

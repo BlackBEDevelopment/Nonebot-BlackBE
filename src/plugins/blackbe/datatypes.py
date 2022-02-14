@@ -20,18 +20,38 @@ class BlackBEReturnDataFullInfo(BaseModel):
 
 
 class BlackBEReturnDataInfo(BaseModel):
-    uuid: Optional[str]
-    name: Optional[str]
+    uuid: str
+    name: str
     black_id: Optional[str]
-    xuid: Optional[str]
-    info: Optional[str]
-    level: Optional[int]
-    qq: Optional[int]
+    xuid: str
+    info: str
+    server: Optional[str]
+    time: Optional[str]
+    level: int
+    qq: int
+    area_code: Optional[str]
+    phone: Optional[int]
 
 
 class BlackBEReturnData(BaseModel):
+    repo_success: Optional[bool]
+    repo_uuid: Optional[str]
     exist: bool
     info: List[Optional[BlackBEReturnDataInfo]]
+
+
+class BlackBEReturnRepo(BaseModel):
+    uuid: str
+    name: str
+    type: int
+    list_num: int
+    server: str
+    server_type: str
+
+
+class BlackBEReturnRepoList(BaseModel):
+    repositories_num: int
+    repositories_list: List[Optional[BlackBEReturnRepo]]
 
 
 class BlackBEReturn(BaseModel):
@@ -41,4 +61,8 @@ class BlackBEReturn(BaseModel):
     version: str
     codename: str
     time: str
-    data: Union[BlackBEReturnData, BlackBEReturnDataFullInfo, list[None]]
+    data: Union[BlackBEReturnData,
+                List[BlackBEReturnData],
+                BlackBEReturnRepoList,
+                BlackBEReturnDataFullInfo,
+                List[None]]
