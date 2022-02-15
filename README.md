@@ -3,6 +3,13 @@ BlackBE QQ Bot Nonebot a16 edition
 
 我反正懒得改b1了，有人改了就pr吧
 
+安装依赖
+----
+首次使用请安装依赖
+```bash
+pip install -r requirements.txt
+```
+
 配置文件
 ----
 首次启动会生成`./shigure/blackbe.json`配置文件，填写`token`值即可查询您的私有库记录，重启nonebot生效
