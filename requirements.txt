@@ -1,2 +1,4 @@
 pydantic
 aiohttp
+aiofiles
+nonebot-plugin-htmlrender==0.0.4.2
