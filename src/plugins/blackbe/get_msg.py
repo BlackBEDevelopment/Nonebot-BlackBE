@@ -1,4 +1,8 @@
+import os.path
+
+import aiofiles
 from nonebot.adapters.cqhttp import MessageSegment
+from nonebot_plugin_htmlrender import md_to_pic
 
 from .config import config
 from .datatypes import BlackBEReturnDataInfo
@@ -27,17 +31,46 @@ async def parse_info(info: BlackBEReturnDataInfo, uuid=''):
 
     black_id = info.black_id if info.black_id else uuid
     repo_name = await get_repo_name(black_id)
-    return ''.join([  # nmd 用括号隐式连接的时候格式化抽风了
-        f'玩家ID：{info.name}\n',
-        f'危险等级：{parse_lvl(info.level)}\n',
-        f'记录原因：{info.info}\n',
-        (f'违规服务器：{info.server}\n' if info.server else ''),
-        f'XUID：{info.xuid}\n',
-        f'玩家QQ：{info.qq}\n',
-        (f'玩家电话：{info.area_code} {info.phone}\n' if info.phone else ''),
-        f'库来源：{repo_name}\n',
-        (f'记录时间：{info.time}\n' if info.time else ''),
-        f'记录UUID：{info.uuid}'])
+
+    photos = None
+    if info.photos:
+        photos = '\n- 证据图片：\n\n'
+        for photo in info.photos:
+            path = './shigure/blackbe_tmp'
+            name = photo[photo.rfind('/') + 1:]
+            full_path = os.path.join(path, name)
+
+            if not os.path.exists(path):
+                os.makedirs(path)
+
+            if os.path.exists(full_path):
+                photos += f'  ![]({os.path.abspath(full_path)})\n\n'
+            else:
+                if not photo.startswith('http://') or photo.startswith('https://'):
+                    photo = 'http://' + photo
+                try:
+                    async with aiohttp.ClientSession() as s:
+                        async with s.get(photo) as raw:
+                            p = await raw.read()
+                    async with aiofiles.open(full_path, 'wb') as f:
+                        await f.write(p)
+                except:
+                    photos += f'  获取图片失败（{photo}）\n\n'
+                else:
+                    photos += f'  ![]({os.path.abspath(full_path)})\n\n'
+
+    return '\n'.join([  # nmd 用括号隐式连接的时候格式化抽风了
+        f'- 玩家ID：{info.name}\n',
+        f'- 危险等级：{parse_lvl(info.level)}\n',
+        f'- 记录原因：{info.info}\n',
+        (f'- 违规服务器：{info.server}\n' if info.server else ''),
+        f'- XUID：{info.xuid}\n',
+        f'- 玩家QQ：{info.qq}\n',
+        (f'- 玩家电话：{info.area_code} {info.phone}\n' if info.phone else ''),
+        f'- 库来源：{repo_name}\n',
+        (f'- 记录时间：{info.time}\n' if info.time else ''),
+        f'- 记录UUID：{info.uuid}',
+        photos if photos else ''])
 
 
 async def get_info_msg(**kwargs):
@@ -77,17 +110,18 @@ async def get_info_msg(**kwargs):
         else:
             tip_fail.append(f'查询私有库记录失败：{ret_repo!r}')
 
-    msg = [f'关于 {list(kwargs.values())[0]} 的查询结果：']
+    msg = [f'# 关于 {list(kwargs.values())[0]} 的查询结果：']
     if tip_success:
         msg.append(f'查询到{"，".join(tip_success)}')
     if tip_fail:
-        msg.append("\n".join(tip_fail))
+        msg.extend(tip_fail)
     if not tip_success and not tip_fail:
         msg.append('没有查询到任何记录')
     for i in info:
-        msg.append('============')
+        msg.append('----')
         msg.append(i)
-    return MessageSegment.text('\n'.join(msg))
+    img = await md_to_pic('\n\n'.join(msg), width=1000)
+    return MessageSegment.image(img)
 
 
 async def get_full_info_msg(uuid):

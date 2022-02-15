@@ -1,13 +1,14 @@
 from nonebot import get_driver, on_message, on_startswith, require
 from nonebot.adapters.cqhttp import Bot, Event, MessageSegment
 
-from .config import Config
+from .config import config
 from .datatypes import BlackBEReturn
 from .get_data import get_simple_info
 from .get_msg import get_full_info_msg, get_info_msg
 
+__version__ = '1.0.2'
+
 global_config = get_driver().config
-config = Config(**global_config.dict())
 
 # Export something for other plugin
 # export = nonebot.export()
@@ -27,7 +28,7 @@ async def delete_temp():
 
 
 simple = on_startswith('查云黑')
-full = on_startswith('云黑详情')
+# full = on_startswith('云黑详情')
 detect = on_message(priority=99)
 
 
@@ -45,9 +46,10 @@ async def handler_simple(bot: Bot, event: Event):
     await simple.finish('\n' + ret, at_sender=True)
 
 
-@full.handle()
+# @full.handle()
 async def handler_full(bot: Bot, event: Event):
-    await full.finish('由于我们可爱猫猫的强烈谴责，此指令不开放（哭哭）', at_sender=True)
+    pass
+    # await full.finish('由于我们可爱猫猫的强烈谴责，此指令不开放（哭哭）', at_sender=True)
     '''
     msg = str(event.get_message()).removeprefix('云黑详情').strip()
     ret = await get_full_info_msg(msg)
@@ -72,7 +74,7 @@ async def handler_detect(bot: Bot, event: Event):
                 "time"    : 0,
                 "data"    : {"exist": False, "info": []}
             })
-            ret = await get_simple_info(qq=event.user_id)
+            ret = await get_simple_info(token=config.token, qq=event.user_id)
             temp['black'][event.user_id] = ret if isinstance(ret, BlackBEReturn) else None
         else:
             ret = temp['black'][event.user_id]
@@ -80,6 +82,7 @@ async def handler_detect(bot: Bot, event: Event):
         if isinstance(ret, BlackBEReturn):
             if ret.data.exist:
                 await detect.send(f'在BlackBE存在违规记录！\n'
-                                  f'使用 查云黑{event.user_id} 查询简略信息\n'
-                                  f'使用 云黑详情{ret.data.info[0].uuid} 查看详细信息', at_sender=True)
+                                  f'使用 查云黑{event.user_id} 查询详细信息',
+                                  # f'使用 云黑详情{ret.data.info[0].uuid} 查看详细信息',
+                                  at_sender=True)
                 temp[f'{event.group_id}.{event.user_id}'] = True

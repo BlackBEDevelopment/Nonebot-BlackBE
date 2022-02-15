@@ -31,6 +31,7 @@ class BlackBEReturnDataInfo(BaseModel):
     qq: int
     area_code: Optional[str]
     phone: Optional[int]
+    photos: Optional[List[Optional[str]]]
 
 
 class BlackBEReturnData(BaseModel):
