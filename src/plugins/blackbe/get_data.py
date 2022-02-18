@@ -46,15 +46,23 @@ async def get_simple_info(token='', **kwargs):
         return e
 
 
-async def get_private_repo_info(token, **kwargs):
+async def get_private_repo_info(token, ignore_repos=None, **kwargs):
     try:
         repos = await get_repos(token)
+        repos = [x.uuid for x in repos.data.repositories_list]
+        if ignore_repos:
+            for i in ignore_repos:
+                try:
+                    repos.remove(i)
+                except:
+                    pass
+
         async with aiohttp.ClientSession() as s:
             async with s.post(
                     'https://api.blackbe.xyz/openapi/v3/check/private',
                     params=kwargs,
                     headers={'Authorization': f'Bearer {token}'},
-                    json={'repositories_uuid': [x.uuid for x in repos.data.repositories_list]}
+                    json={'repositories_uuid': repos}
             ) as raw:
                 ret = await raw.json()
         return BlackBEReturn(**ret)
