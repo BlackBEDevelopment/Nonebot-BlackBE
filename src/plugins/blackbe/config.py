@@ -1,13 +1,15 @@
 import asyncio
 import json
 import os.path
+from typing import Optional
 
 from pydantic import BaseSettings
 
 
 class Config(BaseSettings):
     # Your Config Here
-    token: str = ''
+    token: Optional[str] = ''
+    ignore_repos: Optional[list[Optional[str]]] = []
 
     class Config:
         extra = "ignore"
@@ -22,7 +24,7 @@ async def update_conf():
     if not os.path.exists(path):
         os.makedirs(path)
     if not os.path.exists(full_path):
-        config = Config(**{'token': ''})
+        config = Config(**{'token': '', 'ignore_repos': []})
         with open(full_path, 'w', encoding='utf-8') as f:
             json.dump(config.dict(), f)
     else:

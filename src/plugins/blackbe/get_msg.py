@@ -77,7 +77,7 @@ async def get_info_msg(**kwargs):
     ret_simple = await get_simple_info(**kwargs)
     ret_repo = None
     if config.token:
-        ret_repo = await get_private_repo_info(config.token, **kwargs)
+        ret_repo = await get_private_repo_info(config.token, config.ignore_repos, **kwargs)
     info = []
     tip_success = []
     tip_fail = []

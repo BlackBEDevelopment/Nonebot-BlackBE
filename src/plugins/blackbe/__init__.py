@@ -5,8 +5,9 @@ from .config import config
 from .datatypes import BlackBEReturn
 from .get_data import get_simple_info
 from .get_msg import get_full_info_msg, get_info_msg
+from .utils import list_has_same_item
 
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 
 global_config = get_driver().config
 
@@ -81,8 +82,10 @@ async def handler_detect(bot: Bot, event: Event):
 
         if isinstance(ret, BlackBEReturn):
             if ret.data.exist:
-                await detect.send(f'在BlackBE存在违规记录！\n'
-                                  f'使用 查云黑{event.user_id} 查询详细信息',
-                                  # f'使用 云黑详情{ret.data.info[0].uuid} 查看详细信息',
-                                  at_sender=True)
-                temp[f'{event.group_id}.{event.user_id}'] = True
+                repos = [x.uuid for x in ret.data.info]
+                if not list_has_same_item(config.ignore_repos, repos):
+                    await detect.send(f'在BlackBE存在违规记录！\n'
+                                      f'使用 查云黑{event.user_id} 查询详细信息',
+                                      # f'使用 云黑详情{ret.data.info[0].uuid} 查看详细信息',
+                                      at_sender=True)
+                    temp[f'{event.group_id}.{event.user_id}'] = True

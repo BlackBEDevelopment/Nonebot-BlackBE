@@ -1,5 +1,5 @@
 # Nonebot-BlackBE
-BlackBE QQ Bot Nonebot a16 edition
+BlackBE QQ Bot Nonebot2 a16 edition
 
 我反正懒得改b1了，有人改了就pr吧
 
@@ -12,4 +12,11 @@ pip install -r requirements.txt
 
 配置文件
 ----
-首次启动会生成`./shigure/blackbe.json`配置文件，填写`token`值即可查询您的私有库记录，重启nonebot生效
+首次启动会生成`./shigure/blackbe.json`配置文件，更改后重启nonebot生效
+
+```jsonc
+{
+    "token": "", //如要查询私有库，在这里填写BlackBE OpenAPI Token
+    "ignore_repos": [] //忽略的私有库uuid列表
+}
+```
