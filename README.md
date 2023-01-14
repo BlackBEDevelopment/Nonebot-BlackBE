@@ -1,4 +1,8 @@
 # Nonebot-BlackBE
+
+## 适配 NB2 beta1+ 的插件请移步 [ShigureBot](https://github.com/lgc2333/ShigureBot/tree/main/src/plugins/shigure_bot/plugins/blackbe)
+## 如果对安装有疑问请移步[这里](https://github.com/lgc2333/ShigureBot#shigurebot)
+
 BlackBE QQ Bot Nonebot2 a16 edition
 
 我反正懒得改b1了，有人改了就pr吧
